@@ -1,6 +1,8 @@
 package it.unisa.control;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -40,26 +42,38 @@ public class RegistrazioneServlet extends HttpServlet {
         dataNascita = parti[2] + "-" + parti[1] + "-" + parti[0];
 		
 		try {
-			
-			UserBean user = new UserBean();
-			user.setNome(nome);
-			user.setCognome(cognome);
-			user.setEmail(email);
-			user.setDataDiNascita(Date.valueOf(dataNascita));
-			user.setUsername(username);
-			user.setPassword(pwd);
-			user.setAmministratore(false);
-			user.setCap(null);
-			user.setIndirizzo(null);
-			user.setCartaDiCredito(null);
-			dao.doSave(user);
-			
-		}catch(SQLException e) {
-			System.out.println("Error:" + e.getMessage());
-		}
-				
-		response.sendRedirect(request.getContextPath() + "/Home.jsp");
+			 String hashedPassword = hashPassword(password);
 
-	}
+	            UserBean user = new UserBean();
+	            user.setNome(nome);
+	            user.setCognome(cognome);
+	            user.setEmail(email);
+	            user.setDataDiNascita(Date.valueOf(dataNascita));
+	            user.setUsername(username);
+	            user.setPassword(hashedPassword); // Salva l'hash nel database
+	            user.setAmministratore(false);
+	            user.setCap(null);
+	            user.setIndirizzo(null);
+	            user.setCartaDiCredito(null);
+	            dao.doSave(user);
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+
+	        response.sendRedirect(request.getContextPath() + "/Home.jsp");
+	    }
+	
+	private static String hashPassword(String password) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hashBytes = digest.digest(password.getBytes());
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hashBytes) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) hexString.append('0');
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
 
 }
