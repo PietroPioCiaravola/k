@@ -5,8 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -192,6 +194,12 @@ public class ProdottoDao implements ProdottoDaoInterfaccia{
 			}
 		}
 		return products;
+	}
+	private boolean isValidColumn(String column) {
+	    List<String> validColumns = Arrays.asList("NOME", "PIATTAFORMA", "DESCRIZIONE", "PREZZO", "QUANTITA",
+	                                              "GENERE", "DATA_USCITA", "IN_VENDITA", "IVA", "IMMAGINE",
+	                                              "DESCRIZIONE_DETTAGLIATA");
+	    return validColumns.contains(column.toUpperCase());
 	}
 	
 	@Override
